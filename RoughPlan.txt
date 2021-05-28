@@ -1,0 +1,9 @@
+- Create Web Hook
+    https://uksouth.dev.cognitive.microsoft.com/docs/services/speech-to-text-api-v3-0/operations/CreateHook
+    transcriptionCompletion : True
+
+- Event Grid Trigger
+
+- Convert MP4 to MP3
+
+- Web Hook triggers data collection
