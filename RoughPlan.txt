@@ -7,3 +7,6 @@
 - Convert MP4 to MP3
 
 - Web Hook triggers data collection
+
+
+TODO: EventGridTrigger/HttpTrigger for upload
