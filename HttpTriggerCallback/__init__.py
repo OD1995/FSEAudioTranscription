@@ -214,17 +214,23 @@ ORDER BY DateTimeRowAdded DESC
         'TextStartTime' : 'str',
         'TextEndTime' : 'str'
     }
+    ## Split df into blocks of 900 rows (1000 row max upload)
+    n = 900
+    indexBlocks = [
+        list(df.index)[i * n:(i + 1) * n]
+        for i in range((len(list(df.index)) + n - 1) // n )]
+    for indexBlock in indexBlocks:
+        DF = df[df.index.isin(indexBlock)]
+        q = create_insert_query(
+            df=DF,
+            columnDict=columnDict,
+            sqlTableName="VideoIndexerTranscripts"
+        )
 
-    q = create_insert_query(
-        df=df,
-        columnDict=columnDict,
-        sqlTableName="VideoIndexerTranscripts"
-    )
-
-    run_sql_command(
-        sqlQuery=q,
-        database="AzureCognitive"
-    )
+        run_sql_command(
+            sqlQuery=q,
+            database="AzureCognitive"
+        )
 
     return func.HttpResponse(
         status_code=200

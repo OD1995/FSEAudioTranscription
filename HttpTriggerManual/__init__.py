@@ -6,8 +6,8 @@ import os
 import azure.functions as func
 from datetime import datetime
 import azure.durable_functions as df
-from azure.storage.blob import BlockBlobService
-
+# from azure.storage.blob import BlockBlobService
+from urllib.parse import quote
 
 def post_mp3(
     URL,
@@ -67,7 +67,10 @@ async def main(req: func.HttpRequest, starter: str) -> func.HttpResponse:
     
     client = df.DurableOrchestrationClient(starter)
 
-    URL = req.params.get('URL')
+    URL = quote(
+        string=req.params.get('URL'),
+        safe="/:"
+    )
     # videoName= req.params.get('videoName')
     logging.info(f"URL: {URL}")
     # logging.info(f"videoName: {videoName}")

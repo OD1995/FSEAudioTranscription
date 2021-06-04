@@ -12,6 +12,7 @@ from moviepy.editor import VideoFileClip
 from moviepy.config import FFMPEG_BINARY
 from azure.storage.blob import ContainerPermissions
 from datetime import datetime, timedelta
+from urllib.parse import unquote
 import azure.functions as func
 import os
 from azure.storage.blob import BlockBlobService
@@ -31,6 +32,8 @@ def main(activityInput: dict, msg: func.Out[str]) -> str:
 
     container = activityInput['fileURL'].split("/")[3]
 
+    logging.info(f"URL: {activityInput['fileURL']}")
+
     ## Create SAS URL
     bbs = BlockBlobService(
         connection_string=os.getenv('fsevideosCS')
@@ -40,13 +43,14 @@ def main(activityInput: dict, msg: func.Out[str]) -> str:
         block_blob_service=bbs,
         container=container
     )
+    logging.info(f"sasURL: {sasURL}")
     ## Get MP4 in VideoFileClip object
     logging.info(f"FFMPEG_BINARY: {FFMPEG_BINARY}")
     clip = VideoFileClip(sasURL)
     logging.info(f"clip.duration: {clip.duration}")
     ## Create path to save 
     blobName = activityInput['fileURL'].split("/")[-1]
-    mp3Name = blobName.replace(".mp4",".mp3")
+    mp3Name = unquote(blobName.replace(".mp4",".mp3"))
     tempClipFilePath = "/tmp/" + mp3Name
     ## Save audio to path
     clip.audio.write_audiofile(tempClipFilePath)
