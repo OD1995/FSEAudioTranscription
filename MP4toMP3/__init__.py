@@ -24,9 +24,9 @@ def get_SAS_URL(fileURL,
     sasTokenRead = block_blob_service.generate_container_shared_access_signature(
         container_name=container,
         permission=ContainerPermissions.READ,
-        expiry=datetime.utcnow() + timedelta(days=1)
+        expiry=datetime.utcnow() + timedelta(days=7)
     )
-    return f"{fileURL}?{sasTokenRead}"
+    return f"{fileURL.replace(' ','%20')}?{sasTokenRead}"
 
 def main(activityInput: dict, msg: func.Out[str]) -> str:
 

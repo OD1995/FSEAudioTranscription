@@ -182,11 +182,18 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info(f"r2.headers: {r2.headers}")
     logging.info(f"r2.text: {r2.text}")
     ## Extract relevant URL
-    transcriptURL = [
-        x
-        for x in r2.json()['values']
-        if x['kind'] == 'Transcription'
-    ][0]['links']['contentUrl']
+    try:
+        transcriptURL = [
+            x
+            for x in r2.json()['values']
+            if x['kind'] == 'Transcription'
+        ][0]['links']['contentUrl']
+    except IndexError:
+        logging.info("The required links URL was not present in the response")
+        logging.info("IndexError exception caught, to stop the web hook failing")
+        return func.HttpResponse(
+            status_code=200,
+        ) 
     ## Get VideoName from SQL
     Q = f"""
 SELECT VideoName

@@ -67,10 +67,11 @@ async def main(req: func.HttpRequest, starter: str) -> func.HttpResponse:
     
     client = df.DurableOrchestrationClient(starter)
 
-    URL = quote(
-        string=req.params.get('URL'),
-        safe="/:"
-    )
+    # URL = quote(
+    #     string=req.params.get('URL'),
+    #     safe="/:"
+    # )
+    URL = req.params.get('URL')
     # videoName= req.params.get('videoName')
     logging.info(f"URL: {URL}")
     # logging.info(f"videoName: {videoName}")
