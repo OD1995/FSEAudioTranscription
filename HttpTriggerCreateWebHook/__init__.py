@@ -5,9 +5,6 @@ import os
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    """
-THIS DOES NOT WORK, NEXT TIME A NEW WEB HOOK IS NEEDED, TRY TO WORK OUT WHY
-    """
     
     logging.info('Python HTTP trigger function processed a request.')
 
@@ -21,7 +18,7 @@ THIS DOES NOT WORK, NEXT TIME A NEW WEB HOOK IS NEEDED, TRY TO WORK OUT WHY
             "Content-Type" : 'application/json',
             'Ocp-Apim-Subscription-Key' : os.getenv("fse_speech_key")
         },
-        data={
+        json={
             "displayName": "TranscriptionCompletionWebHook",
             "webUrl": callbackURL,
             "events": {
