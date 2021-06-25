@@ -196,7 +196,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         ) 
     ## Get VideoName from SQL
     Q = f"""
-SELECT VideoName
+SELECT RowID,VideoName
 FROM TranscriptFilesIDs
 WHERE FilesID = '{filesID}'
 ORDER BY DateTimeRowAdded DESC
@@ -207,6 +207,7 @@ ORDER BY DateTimeRowAdded DESC
     )
     ## Choose most recent row (in the unlikely event of duplication)
     videoName = sqlDF.loc[0,'VideoName']
+    rowID = sqlDF.loc[0,'RowID']
     ## Get transcription in df
     df = get_results_to_df(
         url=transcriptURL,
@@ -239,6 +240,12 @@ ORDER BY DateTimeRowAdded DESC
             database="AzureCognitive"
         )
 
+    ## Update TranscriptFilesIDs Status column
+    q2 = f"""UPDATE TranscriptFilesIDs SET [Status] = 'Done' WHERE RowID = {rowID}"""
+    run_sql_command(
+        sqlQuery=q2,
+        database="AzureCognitive"
+    )
     return func.HttpResponse(
         status_code=200
     )

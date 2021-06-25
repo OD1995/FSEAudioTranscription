@@ -12,7 +12,7 @@ df = fromSQLquery(query=Q,
 
 start_url = 'https://uksouth.api.cognitive.microsoft.com/speechtotext/v3.0/transcriptions'
 
-for filesID in df.FilesID:
+for filesID in df.FilesID[1:]:
     print(datetime.now())
     print(filesID)
     r = requests.post(
