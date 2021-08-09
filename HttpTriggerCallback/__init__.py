@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from numpy import inf
 import pandas as pd
 import pyodbc
 import azure.functions as func
@@ -173,6 +174,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     }
     filesURL = f"{js['self']}/files"
     filesID = filesURL.split("/")[-2]
+    logging.info(f'filesID: {filesID}')
     logging.info(f"filesURL: {filesURL}")
     r2 = requests.get(
         url=filesURL,
@@ -205,6 +207,7 @@ ORDER BY DateTimeRowAdded DESC
         sqlQuery=Q,
         database="AzureCognitive"
     )
+    logging.info(f"sqlDF.shape: {sqlDF.shape}")
     ## Choose most recent row (in the unlikely event of duplication)
     videoName = sqlDF.loc[0,'VideoName']
     rowID = sqlDF.loc[0,'RowID']

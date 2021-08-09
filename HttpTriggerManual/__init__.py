@@ -8,6 +8,7 @@ from datetime import datetime
 import azure.durable_functions as df
 # from azure.storage.blob import BlockBlobService
 from urllib.parse import quote
+from urllib.parse import unquote
 
 def post_mp3(
     URL,
@@ -55,7 +56,7 @@ def post_mp3(
     ## Add to SQL with videoName
     q = f"""
 INSERT INTO TranscriptFilesIDs (FilesID,VideoName)
-VALUES ('{filesID}','{videoName}')
+VALUES ('{filesID}','{videoName.replace("'","''")}')
     """
     run_sql_command(
         sqlQuery=q,
@@ -76,17 +77,22 @@ async def main(req: func.HttpRequest, starter: str) -> func.HttpResponse:
     logging.info(f"URL: {URL}")
     # logging.info(f"videoName: {videoName}")
     
-    # post_mp3(
-    #     URL=URL,
-    #     videoName=videoName
-    # )
+    if URL.lower().endswith('.mp4'):
+        instance_id = await client.start_new(
+            orchestration_function_name="Orchestrator",
+            instance_id=None,
+            client_input={
+                'fileURL' : URL
+            }
+        )
+        return client.create_check_status_response(req, instance_id)
+    elif URL.lower().endswith('.mp3'):
+        blobName = URL.split("/")[-1]
+        videoName = unquote(blobName)
+        post_mp3(
+            URL=URL,
+            videoName=videoName
+        )
+        return 'done'
 
-    instance_id = await client.start_new(
-        orchestration_function_name="Orchestrator",
-        instance_id=None,
-        client_input={
-            'fileURL' : URL
-        }
-    )
 
-    return client.create_check_status_response(req, instance_id)
